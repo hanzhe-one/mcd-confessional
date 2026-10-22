@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="470" viewBox="0 0 1200 470" role="img" aria-label="架构：MCP 取数，Python 算术，Agent 表达">
+  <defs>
+    <pattern id="dots2" width="10" height="10" patternUnits="userSpaceOnUse">
+      <rect width="10" height="10" fill="#fdf6e3"/>
+      <circle cx="5" cy="5" r="1.1" fill="#f0e4c8"/>
+    </pattern>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1a1a1a"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="470" fill="url(#dots2)"/>
+  <rect x="0" y="0" width="1200" height="6" fill="#d9232e"/>
+
+  <g font-family="PingFang SC, Microsoft YaHei, sans-serif">
+    <!-- 标题 -->
+    <rect x="40" y="30" width="12" height="12" fill="#d9232e"/>
+    <text x="62" y="43" font-size="23" font-weight="900" fill="#1a1a1a" letter-spacing="1.5">三层分工：取数、算术、表达互不越界</text>
+    <text x="64" y="70" font-size="13.5" fill="#7a6a52" letter-spacing="0.5">改文案不会改错数字，改算法也不用动文案。</text>
+
+    <!-- 卡片 1 -->
+    <g>
+      <rect x="40" y="100" width="330" height="250" fill="#1a1a1a"/>
+      <rect x="33" y="93" width="330" height="250" fill="#fffdf6" stroke="#1a1a1a" stroke-width="3"/>
+      <rect x="33" y="93" width="330" height="40" fill="#d9232e"/>
+      <text x="53" y="120" font-size="16" font-weight="900" fill="#fff8e7">① MCP 取数</text>
+      <g font-family="Consolas, monospace" font-size="12.5" fill="#3a2f24">
+        <text x="53" y="160">order-list          历史订单</text>
+        <text x="53" y="186">query-my-coupons    卡包券</text>
+        <text x="53" y="212">list-nutrition-foods  营养</text>
+        <text x="53" y="238">now-time-info       判决时间</text>
+      </g>
+      <rect x="53" y="262" width="290" height="1.5" fill="#e0d0b0"/>
+      <text x="53" y="290" font-size="12" fill="#8a6d3b">只读 · 不碰下单与支付</text>
+      <text x="53" y="314" font-size="12" fill="#8a6d3b">返回 35 个官方工具</text>
+    </g>
+
+    <!-- 卡片 2 -->
+    <g>
+      <rect x="435" y="100" width="330" height="250" fill="#1a1a1a"/>
+      <rect x="428" y="93" width="330" height="250" fill="#fffdf6" stroke="#1a1a1a" stroke-width="3"/>
+      <rect x="428" y="93" width="330" height="40" fill="#f7c948"/>
+      <text x="448" y="120" font-size="16" font-weight="900" fill="#1a1a1a">② Python 算术</text>
+      <g font-family="Consolas, monospace" font-size="12.5" fill="#3a2f24">
+        <text x="448" y="160">optimizer.py     位掩码 DP</text>
+        <text x="448" y="186">audit.py         亏损 + 归因</text>
+        <text x="448" y="212">sin_ledger.py    罪级与赎罪</text>
+        <text x="448" y="238">trial.py         四角色编排</text>
+      </g>
+      <rect x="448" y="262" width="290" height="1.5" fill="#e0d0b0"/>
+      <text x="448" y="290" font-size="12" fill="#8a6d3b">确定性 · 同输入必同输出</text>
+      <text x="448" y="314" font-size="12" fill="#8a6d3b">18 项自测 + 200 例暴力对拍</text>
+    </g>
+
+    <!-- 卡片 3 -->
+    <g>
+      <rect x="830" y="100" width="330" height="250" fill="#1a1a1a"/>
+      <rect x="823" y="93" width="330" height="250" fill="#fffdf6" stroke="#1a1a1a" stroke-width="3"/>
+      <rect x="823" y="93" width="330" height="40" fill="#5fa050"/>
+      <text x="843" y="120" font-size="16" font-weight="900" fill="#fff8e7">③ Agent 表达</text>
+      <g font-size="12.5" fill="#3a2f24">
+        <text x="843" y="160">审计官　摆出数字</text>
+        <text x="843" y="186">辩护律师　找减刑情节</text>
+        <text x="843" y="212">告解师　定罪量刑</text>
+        <text x="843" y="238">执事　盯打卡与券预警</text>
+      </g>
+      <rect x="843" y="262" width="290" height="1.5" fill="#e0d0b0"/>
+      <text x="843" y="290" font-size="12" fill="#8a6d3b">只转述，不心算</text>
+    </g>
+
+    <!-- 箭头 -->
+    <line x1="370" y1="218" x2="422" y2="218" stroke="#1a1a1a" stroke-width="3.5" marker-end="url(#arw)"/>
+    <line x1="765" y1="218" x2="817" y2="218" stroke="#1a1a1a" stroke-width="3.5" marker-end="url(#arw)"/>
+
+    <!-- 产物条 -->
+    <rect x="40" y="392" width="1120" height="42" fill="#1a1a1a"/>
+    <rect x="33" y="385" width="1120" height="42" fill="#f7c948" stroke="#1a1a1a" stroke-width="3"/>
+    <text x="593" y="413" font-size="13.5" fill="#1a1a1a" text-anchor="middle" font-weight="700" letter-spacing="0.6">
+      产物：庭审记录 HTML　·　告解证书（可截图分享）　·　罪恶账本（赎罪进度与连续打卡）
+    </text>
+  </g>
+</svg>
