@@ -113,6 +113,20 @@ def _expand_units(items: list[OrderItem], qty: list[int]) -> list[OrderItem]:
     return units
 
 
+def same_food(coupon_target: str, product_name: str) -> bool:
+    """判断券面写的商品名与订单里的商品名是否指同一样东西。
+
+    麦当劳的券名和菜单名经常差一个字：券叫「麦辣鸡腿堡」，菜单叫「麦辣鸡腿汉堡」。
+    直接子串匹配会全部落空——后果是券池看起来是空的，审计永远算出「0 元可省」。
+    这里先做归一化（去掉「汉堡」的「汉」、「堡/汉堡」互换），再退回子串双向包含。
+    """
+    if not coupon_target or not product_name:
+        return False
+    a = coupon_target.replace("汉堡", "堡")
+    b = product_name.replace("汉堡", "堡")
+    return a in b or b in a
+
+
 def _coupon_covers(coupon: Coupon, subset: list[OrderItem]) -> tuple[bool, float]:
     """判断一张券能否覆盖给定子集，返回 (可行, 该子集用券后的金额)。"""
     if not subset:
@@ -122,13 +136,13 @@ def _coupon_covers(coupon: Coupon, subset: list[OrderItem]) -> tuple[bool, float
         # 单品券：子集内每一件都必须是券适用的商品，且数量不超过限购
         if len(subset) > coupon.max_qty:
             return False, 0.0
-        if coupon.target and not all(coupon.target in u.name for u in subset):
+        if coupon.target and not all(same_food(coupon.target, u.name) for u in subset):
             return False, 0.0
         return True, round(coupon.price * len(subset), 2)
 
     if coupon.kind == "threshold":
         # 满减券：子集原价合计达到门槛
-        if coupon.target and not all(coupon.target in u.name for u in subset):
+        if coupon.target and not all(same_food(coupon.target, u.name) for u in subset):
             return False, 0.0
         amount = round(sum(u.price for u in subset), 2)
         if amount + 1e-9 < coupon.threshold:

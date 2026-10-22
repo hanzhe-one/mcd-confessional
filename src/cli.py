@@ -22,6 +22,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.audit import audit_all  # noqa: E402
+from src.console import harden_stdout  # noqa: E402
 from src.demo_data import DEMO_COUPON_TEXT, DEMO_COUPONS, DEMO_MENU, DEMO_ORDERS  # noqa: E402
 from src.mcp_client import MCPClient, MCPError  # noqa: E402
 from src.nutrition_table import NutritionTable  # noqa: E402
@@ -207,6 +208,7 @@ def cmd_demo(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    harden_stdout()
     parser = argparse.ArgumentParser(prog="mcd-confessional", description="麦门告解室：多角色消费审判庭")
     sub = parser.add_subparsers(dest="command", required=True)
 

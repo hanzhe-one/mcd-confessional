@@ -8,6 +8,7 @@ from __future__ import annotations
 import random
 import sys
 
+from src.console import harden_stdout
 from src.optimizer import Coupon, OrderItem, brute_force_best, optimize
 
 PASS = 0
@@ -145,7 +146,27 @@ def test_channel_filter() -> None:
     check("到店不应用外送券", plan.total, 25.0)
 
 
+def test_coupon_name_variants() -> None:
+    """券面名与菜单名差一个字的真实场景。
+
+    实测：卡包券叫「11.9元麦辣鸡腿堡」，菜单与订单叫「麦辣鸡腿汉堡」。
+    严格子串匹配会全部落空，券池看起来是空的，审计永远算出「0 元可省」。
+    """
+    print("\n[9] 券名与菜单名不一致（真实券面写法）")
+    burger = OrderItem("1440", "麦辣鸡腿汉堡", 23.0, 485)
+    fries = OrderItem("4810", "薯条", 14.5, 289)
+    c = Coupon("live0", "11.9元麦辣鸡腿堡", "discount", price=11.9, target="麦辣鸡腿堡")
+    plan = optimize([burger, fries], [1, 1], [c])
+    check("券被识别", plan.coupon_names, ["11.9元麦辣鸡腿堡"])
+    check("总价 = 券价 + 薯条原价", plan.total, 26.4)
+
+    other = OrderItem("1100", "巨无霸", 26.0, 513)
+    plan2 = optimize([other, fries], [1, 1], [c])
+    check("不相干的商品不套用该券", plan2.coupon_names, [])
+
+
 def main() -> int:
+    harden_stdout()
     print("=" * 56)
     print("麦门告解室 · 优化器自测")
     print("=" * 56)
@@ -157,6 +178,7 @@ def main() -> int:
     test_random_vs_bruteforce()
     test_reproducible()
     test_channel_filter()
+    test_coupon_name_variants()
 
     print("\n" + "=" * 56)
     print("结果: {} passed, {} failed".format(PASS, FAIL))

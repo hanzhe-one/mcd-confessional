@@ -1,0 +1,7 @@
+# 统一换行符，避免 Windows 检出把 Markdown / 源码改成 CRLF
+* text=auto eol=lf
+
+# 二进制资源不做换行转换
+*.png binary
+*.gif binary
+*.jpg binary

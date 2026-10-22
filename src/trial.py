@@ -319,7 +319,7 @@ class Trial:
         if accepted:
             lines.append("　采纳辩护 {} 条，减刑 {}%：".format(len(accepted), int(self.result.discount * 100)))
             for p in accepted:
-                lines.append("　　✓ {}".format(p.claim))
+                lines.append("　　√ {}".format(p.claim))
         if rejected:
             lines.append("　驳回 {} 条，理由：证据不足或属普遍行为，不构成减刑事由。".format(len(rejected)))
         lines.append("　最终赎罪义务：{}".format(format_walk(self.result.final_penance)))
