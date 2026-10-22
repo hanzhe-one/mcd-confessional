@@ -27,6 +27,7 @@ from src.mcp_client import MCPClient, MCPError  # noqa: E402
 from src.nutrition_table import NutritionTable  # noqa: E402
 from src.optimizer import Coupon  # noqa: E402
 from src.report import render_certificate_html, render_markdown  # noqa: E402
+from src.render_trial import render_trial_html  # noqa: E402
 from src.sin_ledger import judge, parse_coupons, parse_time  # noqa: E402
 from src.state import DEFAULT_LEDGER_PATH, Ledger  # noqa: E402
 from src.trial import Trial  # noqa: E402
@@ -119,7 +120,12 @@ def cmd_trial(args: argparse.Namespace) -> int:
     cert = os.path.join(OUT_DIR, "confession-certificate.html")
     with open(cert, "w", encoding="utf-8") as fh:
         fh.write(render_certificate_html(verdict, now, audit_summary=summary))
+
+    record = os.path.join(OUT_DIR, "trial-record.html")
+    with open(record, "w", encoding="utf-8") as fh:
+        fh.write(render_trial_html(trial, now))
     print("[执事] 告解证书：{}".format(cert))
+    print("[执事] 庭审记录：{}".format(record))
     return 0
 
 

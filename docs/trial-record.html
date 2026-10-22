@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>庭审记录 · 麦门告解室</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --paper:#faf7f0; --ink:#2b2118; --ink2:#6b5b4a;
+    --line:#e0d4bd; --red:#a63a2e; --gold:#b08b4f; --green:#4a7c59;
+  }
+  body {
+    font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+    background:#efe8da; color:var(--ink); line-height:1.75; padding:28px 16px 60px;
+  }
+  .doc {
+    max-width:760px; margin:0 auto; background:var(--paper);
+    border:1px solid var(--line); box-shadow:0 10px 40px rgba(43,33,24,.14);
+  }
+  /* 文头 */
+  .head { padding:34px 40px 24px; border-bottom:2px solid var(--ink);
+           display:flex; justify-content:space-between; align-items:flex-end; }
+  .head h1 { font-size:26px; letter-spacing:8px; font-weight:700; }
+  .head .en { font-size:10px; letter-spacing:3px; color:var(--gold); margin-top:4px; }
+  .head .meta { text-align:right; font-size:11px; color:var(--ink2); line-height:1.9; }
+  .head .meta b { color:var(--ink); font-weight:600; }
+
+  /* 阶段 */
+  .stage { display:flex; border-bottom:1px solid var(--line); }
+  .seal {
+    flex:0 0 62px; background:#f3ece0; border-right:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; padding:18px 0;
+  }
+  .seal span {
+    writing-mode:vertical-rl; letter-spacing:4px; font-size:13px; font-weight:700;
+    color:var(--red); border:1.5px solid var(--red); border-radius:3px;
+    padding:8px 5px; opacity:.9;
+  }
+  .seal.plain span { color:var(--gold); border-color:var(--gold); }
+  .body { flex:1; padding:20px 26px 24px; min-width:0; }
+  .body h2 { font-size:15px; font-weight:700; letter-spacing:2px; margin-bottom:2px; }
+  .motto { font-size:12.5px; color:var(--gold); font-style:italic; margin-bottom:14px; }
+
+  /* 总览数字 */
+  .figures { display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+              background:var(--line); border:1px solid var(--line); margin-bottom:14px; }
+  .fig { background:#fffdf8; padding:12px 10px; text-align:center; }
+  .fig .k { font-size:11px; color:var(--ink2); }
+  .fig .v { font-family:Georgia,"Times New Roman",serif; font-size:22px;
+             font-weight:700; line-height:1.25; margin-top:2px; }
+  .fig .v.red { color:var(--red); }
+  .fig .u { font-size:11px; font-weight:400; color:var(--ink2); }
+
+  p.line { font-size:13.5px; margin-bottom:6px; }
+  .hl { color:var(--red); font-weight:700; font-family:Georgia,serif; font-size:15px; }
+
+  /* 归因条 */
+  .cause { margin-top:10px; }
+  .cause-head { display:flex; justify-content:space-between; font-size:12.5px; }
+  .cause-head .num { font-family:Georgia,serif; font-weight:700; }
+  .bar { height:5px; background:#eae0cd; margin-top:4px; border-radius:3px; overflow:hidden; }
+  .bar i { display:block; height:100%; background:var(--red); opacity:.75; }
+
+  /* 案情表 */
+  table { width:100%; border-collapse:collapse; font-size:12px; margin-top:4px; }
+  th { text-align:left; font-weight:600; color:var(--ink2); font-size:11px;
+        border-bottom:1px solid var(--line); padding:6px 4px; white-space:nowrap; }
+  td { padding:7px 4px; border-bottom:1px dashed #ece2cf; vertical-align:top; }
+  td.num { text-align:right; font-family:Georgia,serif; white-space:nowrap; }
+  td.t { white-space:nowrap; color:var(--ink2); }
+  .gap-pos { color:var(--red); font-weight:700; }
+  .gap-zero { color:var(--green); }
+
+  /* 辩护 */
+  ul.def { list-style:none; }
+  ul.def li { display:flex; gap:8px; font-size:12.5px; padding:7px 0;
+               border-bottom:1px dashed #ece2cf; align-items:baseline; }
+  ul.def li b { flex:0 0 30px; font-size:10px; font-weight:700; text-align:center;
+                 border-radius:3px; padding:1px 0; }
+  ul.def li.ok b { color:#fff; background:var(--green); }
+  ul.def li.no b { color:var(--ink2); background:#e6dcc8; }
+  ul.def li.no span { color:var(--ink2); text-decoration:line-through; text-decoration-color:#c9bda6; }
+  ul.def li em { display:block; font-style:normal; font-size:11px; color:var(--gold); }
+
+  /* 量刑 */
+  .calc { font-size:13px; background:#f6f0e3; border-left:3px solid var(--gold);
+           padding:12px 14px; margin:6px 0 12px; line-height:2; }
+  .calc .row { display:flex; justify-content:space-between; }
+  .calc .row.total { border-top:1px solid var(--line); margin-top:6px; padding-top:8px;
+                      font-size:15px; font-weight:700; }
+  .calc .num { font-family:Georgia,serif; }
+
+  /* 判决 */
+  .verdict { background:#fffdf8; border:2px solid var(--red); padding:22px 24px;
+              position:relative; }
+  .verdict .rank { font-size:24px; font-weight:800; letter-spacing:4px; color:var(--red);
+                    font-family:Georgia,serif; }
+  .verdict .rank small { font-size:12px; letter-spacing:1px; color:var(--ink2); font-weight:400; }
+  .verdict .pen { font-size:14px; margin-top:8px; }
+  .verdict .note { font-size:12.5px; color:var(--ink2); margin-top:12px;
+                    border-top:1px dashed var(--line); padding-top:10px; }
+  .stamp { position:absolute; right:18px; bottom:14px; width:72px; height:72px;
+            border:3px solid var(--red); border-radius:50%; color:var(--red);
+            display:flex; align-items:center; justify-content:center; text-align:center;
+            font-size:12px; font-weight:700; line-height:1.3; transform:rotate(-11deg); opacity:.72; }
+
+  /* 执事 */
+  .plan { display:flex; gap:26px; align-items:center; flex-wrap:wrap; }
+  .plan .big { font-family:Georgia,serif; font-size:30px; font-weight:700; color:var(--ink); }
+  .plan .big small { font-size:12px; color:var(--ink2); font-weight:400; }
+  .plan .txt { font-size:12.5px; color:var(--ink2); }
+  code { background:#efe7d6; padding:1px 6px; border-radius:3px; font-size:12px; }
+
+  .foot { padding:16px 40px 22px; font-size:10.5px; color:#98876f; text-align:center;
+           border-top:1px solid var(--line); line-height:1.9; }
+  .muted { color:var(--ink2); font-size:12px; }
+  @media (max-width:560px) {
+    .head { padding:24px 20px 18px; flex-direction:column; align-items:flex-start; gap:10px; }
+    .head .meta { text-align:left; }
+    .body { padding:16px 16px 20px; }
+    .seal { flex:0 0 44px; }
+    .seal span { font-size:11px; letter-spacing:2px; }
+    .figures { grid-template-columns:repeat(3,1fr); }
+    .fig .v { font-size:17px; }
+  }
+</style>
+</head>
+<body>
+<div class="doc">
+  <div class="head">
+    <div>
+      <h1>麦门告解室</h1>
+      <div class="en">McDonald's Confessional · Trial Record</div>
+    </div>
+    <div class="meta">
+      案号 <b>MCD-TRIAL-202610221851</b><br>
+      受理区间 <b>332 天</b> · <b>7</b> 笔订单<br>
+      开庭时间 <b>2026-10-22 18:51</b>
+    </div>
+  </div>
+
+  <!-- ① 案情总览 -->
+  <div class="stage">
+    <div class="seal plain"><span>案情</span></div>
+    <div class="body">
+      <h2>一、受理范围</h2>
+      <div class="figures">
+        <div class="fig"><div class="k">涉案金额</div><div class="v">333.00<span class="u"> 元</span></div></div>
+        <div class="fig"><div class="k">累计热量</div><div class="v">6731<span class="u"> 千卡</span></div></div>
+        <div class="fig"><div class="k">订单笔数</div><div class="v">7<span class="u"> 笔</span></div></div>
+      </div>
+      <table>
+        <thead><tr><th>时间</th><th>门店</th><th>涉案餐品</th>
+        <th style="text-align:right">实付</th><th style="text-align:right">最优</th>
+        <th style="text-align:right">亏损</th></tr></thead>
+        <tbody><tr><td class='t'>11-05 12:31</td><td>广州天河城餐厅</td><td>麦辣鸡腿汉堡×1、中薯条×1、可乐(中杯)×1</td><td class='num'>44.00</td><td class='num'>37.00</td><td class='num gap-pos'>7.00 元</td></tr><tr><td class='t'>12-12 23:47</td><td>深圳南山科技园餐厅</td><td>巨无霸×2、麦乐鸡5块×1、大薯条×1</td><td class='num'>52.00</td><td class='num'>64.00</td><td class='num gap-zero'>无亏损</td></tr><tr><td class='t'>01-16 01:12</td><td>上海静安大融城餐厅</td><td>板烧鸡腿堡×1、香芋派×2、热朱古力(中杯)×1</td><td class='num'>39.00</td><td class='num'>41.00</td><td class='num gap-zero'>无亏损</td></tr><tr><td class='t'>03-19 19:05</td><td>北京朝阳大悦城餐厅</td><td>不素之霸双层牛堡×2、那么大鸡排×1、奥利奥麦旋风×2、雪碧(大杯)×2</td><td class='num'>122.00</td><td class='num'>100.00</td><td class='num gap-pos'>22.00 元</td></tr><tr><td class='t'>05-29 15:22</td><td>成都春熙路餐厅</td><td>圆筒冰淇淋×1</td><td class='num'>4.00</td><td class='num'>4.00</td><td class='num gap-zero'>无亏损</td></tr><tr><td class='t'>08-14 22:58</td><td>杭州西湖银泰餐厅</td><td>麦辣鸡翅-2块×1、脆薯饼×2、无糖可口可乐(大杯)×1</td><td class='num'>33.00</td><td class='num'>33.50</td><td class='num gap-zero'>无亏损</td></tr><tr><td class='t'>10-04 11:30</td><td>武汉江汉路餐厅</td><td>麦香鱼×1、小杯玉米杯×1、锡兰红茶×1</td><td class='num'>39.00</td><td class='num'>32.00</td><td class='num gap-pos'>7.00 元</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ② 审计官 -->
+  <div class="stage">
+    <div class="seal"><span>审计官</span></div>
+    <div class="body">
+      <h2>二、审计官陈词</h2>
+      <div class="motto">「感情归你，数字归我。」</div>
+      <div class="figures">
+        <div class="fig"><div class="k">实付合计</div><div class="v">333.00<span class="u"> 元</span></div></div>
+        <div class="fig"><div class="k">理论最优</div><div class="v">311.50<span class="u"> 元</span></div></div>
+        <div class="fig"><div class="k">白扔</div><div class="v red">36.00<span class="u"> 元</span></div></div>
+      </div>
+      <p class="line">7 单中有 <span class="hl">3</span> 单本可更便宜，
+      差额占实付 <span class="hl">10.8%</span>。</p>
+      <p class='line'>亏损最重一单：2026-03-19 19:05:31 于 北京朝阳大悦城餐厅，实付 <span class='hl'>122.00</span> 元，本可 <span class='hl'>100.00</span> 元，白扔 <span class='hl'>22.00</span> 元。</p>
+      <div class='cause'><div class='cause-head'><span>全价买单</span><span class='num'>36.00 元</span></div><div class='bar'><i style='width:100%'></i></div></div>
+    </div>
+  </div>
+
+  <!-- ③ 辩护律师 -->
+  <div class="stage">
+    <div class="seal"><span>辩护人</span></div>
+    <div class="body">
+      <h2>三、辩护意见</h2>
+      <div class="motto">「没有人天生就是罪人，只是没人替他算过账。」</div>
+      <ul class="def"><li class='ok'><b>采纳</b><span>当事人曾主动选择无糖饮品，具备向善意愿</span><em>共 1 单出现过无糖选择</em></li><li class='ok'><b>采纳</b><span>当事人并非挥霍之人，多数订单已在主动使用优惠</span><em>43% 的订单实付低于菜单原价</em></li><li class='ok'><b>采纳</b><span>消费频次有节制，并非沉溺</span><em>332 天内仅 7 单，平均 47.4 天一次</em></li><li class='ok'><b>采纳</b><span>当事人有过零亏损的完美订单，证明其具备自律能力</span><em>4 单实付等于或低于理论最优价</em></li><li class='no'><b>驳回</b><span>深夜下单比例虽高，但当事人承担着高强度工作</span><em>深夜订单占比 43%，属高压人群的普遍行为</em></li><li class='no'><b>驳回</b><span>当事人多次选择小份规格，未有暴食倾向</span><em>1 单选择了小份规格</em></li></ul>
+    </div>
+  </div>
+
+  <!-- ④ 量刑 -->
+  <div class="stage">
+    <div class="seal"><span>合议</span></div>
+    <div class="body">
+      <h2>四、合议量刑</h2>
+      <div class="calc">
+        <div class="row"><span>热量赎罪（6731 千卡 × 0.25 分钟）</span><span class="num">1682 分钟</span></div>
+        <div class="row"><span>亏损罚金（36.00 元白扔 × 10 分钟）</span><span class="num">360 分钟</span></div>
+        <div class="row"><span>基准刑</span><span class="num">2043 分钟</span></div>
+        <div class="row"><span>减刑（采纳 4 条 × 5%，上限 30%）</span><span class="num">−20%</span></div>
+        <div class="row total"><span>最终赎罪义务</span><span class="num">1.1 天</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ 宣判 -->
+  <div class="stage">
+    <div class="seal"><span>判决</span></div>
+    <div class="body">
+      <h2>五、宣判</h2>
+      <div class="verdict">
+        <div class="rank">逐出麦籍 <small>（死罪）</small></div>
+        <div class="pen">判处步行赎罪 <b>1.1 天</b>。</div>
+        <div class="note">你与麦当劳的关系已超越消费，进入信仰范畴。遗憾的是，信仰不能抵扣卡路里。</div>
+        <div class="stamp">麦门<br>告解</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ 执事 -->
+  <div class="stage">
+    <div class="seal"><span>执事</span></div>
+    <div class="body">
+      <h2>六、执行登记</h2>
+      <div class="plan">
+        <div class="big">60<small> 分钟 / 日</small></div>
+        <div class="txt">
+          预计 <b>27</b> 天走完。<br>
+          打卡方式：对执事说 <code>打卡 60 分钟</code><br>
+          提醒：每晚 22:00 晚祷 · 优惠券到期前 24 小时预警
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    本记录由麦门告解室自动生成 · 麦当劳 MCP 真实数据驱动<br>
+    审计金额为按当前券池重算的反事实估算 · 菜单价为演示快照 · 仅供娱乐，不构成营养或医疗建议
+  </div>
+</div>
+</body>
+</html>

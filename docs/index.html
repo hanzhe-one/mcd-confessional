@@ -49,7 +49,7 @@
 
   <div class="hero">
     <div class="cert-frame">
-      <iframe src="confession-certificate.html" title="告解证书示例"></iframe>
+      <iframe src="trial-record.html" title="庭审记录示例"></iframe>
     </div>
     <div class="hero-text">
       <h2>不是卡路里计算器，是审计。</h2>
@@ -58,7 +58,8 @@
       <p>然后四个角色开庭：审计官摆数字、辩护律师找减刑、告解师定罪、
          执事下达<b>每日 60 分钟</b>的赎罪计划并盯着你打卡。</p>
       <a class="btn" href="https://github.com/hanzhe-one/mcd-confessional">查看源码</a>
-      <a class="btn ghost" href="confession-certificate.html">单独打开证书</a>
+      <a class="btn ghost" href="trial-record.html">完整庭审记录</a>
+      <a class="btn ghost" href="confession-certificate.html">告解证书</a>
     </div>
   </div>
 
@@ -73,33 +74,22 @@
   </section>
 
   <section>
-    <h3>真实庭审输出（摘要）</h3>
-    <pre>【审计官陈词】
-经逐单复核：按当前券池的最优组合，7 单里有 3 单本可以更便宜。
-实付合计 333.00 元，理论最优合计 311.50 元，差额 <span class="hl">36.00 元</span>（占实付 10.8%）。
-亏损最重的一单：实付 122.00 元，最优价 100.00 元，<span class="hl">白扔 22.00 元</span>。
-
-【合议量刑】
-基准刑：热量赎罪 约 1.2 天 + 亏损罚金赎罪 约 6.0 小时
-采纳辩护 4 条，减刑 20%　驳回 2 条，理由：证据不足或属普遍行为
-最终赎罪义务：<span class="hl">约 1.1 天</span>
-
-【执事登记】
-赎罪计划：每日步行 60 分钟，预计 27 天完成。</pre>
-    <div class="kv">
-      <span>组合优化：<b>位掩码 DP</b></span>
-      <span>自测：<b>15 项通过</b>（含 200 例暴力对拍）</span>
-      <span>模型不参与任何金额计算</span>
+    <h3>跑一条命令就能看到这些数字</h3>
+    <div class="grid">
+      <div class="card"><div class="role">审计结果</div><div class="t">白扔 36.00 元</div><div class="d">占实付 10.8%，7 单里 3 单本可更便宜</div></div>
+      <div class="card"><div class="role">最惨一单</div><div class="t">122 → 100 元</div><div class="d">北京朝阳大悦城，白扔 22 元</div></div>
+      <div class="card"><div class="role">量刑</div><div class="t">1.1 天 / 27 天</div><div class="d">赎罪总时长 ÷ 每日 60 分钟</div></div>
     </div>
-  </section>
-
-  <section>
-    <h3>零配置体验</h3>
-    <pre>git clone https://github.com/hanzhe-one/mcd-confessional.git
+    <pre style="margin-top:16px">git clone https://github.com/hanzhe-one/mcd-confessional.git
 cd mcd-confessional
 python -m src.cli trial --save    # 开庭（虚构档案，无需 Token）
 python -m src.cli checkin -m 60   # 打卡赎罪 60 分钟
-python -m src.selftest            # 跑自测</pre>
+python -m src.selftest            # 组合优化自测</pre>
+    <div class="kv">
+      <span>CI：<b>每次 push 自动跑</b></span>
+      <span>组合优化：<b>位掩码 DP</b></span>
+      <span>第三方依赖：<b>0</b></span>
+    </div>
   </section>
 
   <div class="note">
