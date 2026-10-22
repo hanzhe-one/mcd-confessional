@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>麦门告解证书</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5efe3; color: #3d2b1f; display: flex;
+    justify-content: center; align-items: center; min-height: 100vh; padding: 24px;
+  }
+  .cert {
+    width: 420px; background: #fffdf6; border: 2px solid #c9a86a; border-radius: 12px;
+    padding: 32px 28px; position: relative; box-shadow: 0 8px 30px rgba(61,43,31,.15);
+  }
+  .cert::before {
+    content: ""; position: absolute; inset: 8px; border: 1px dashed #c9a86a;
+    border-radius: 8px; pointer-events: none;
+  }
+  .head { text-align: center; margin-bottom: 18px; }
+  .head .org { font-size: 12px; letter-spacing: 4px; color: #a08454; }
+  .head h1 { font-size: 26px; letter-spacing: 6px; margin: 6px 0 2px; }
+  .head .no { font-size: 11px; color: #a08454; }
+  .seal {
+    position: absolute; top: 18px; right: 20px; width: 64px; height: 64px;
+    border: 3px solid #b03a2e; border-radius: 50%; color: #b03a2e;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    font-size: 13px; font-weight: 700; line-height: 1.2; transform: rotate(-12deg);
+    opacity: .85;
+  }
+  .row { display: flex; justify-content: space-between; padding: 7px 0;
+         border-bottom: 1px dashed #e3d5b8; font-size: 14px; }
+  .row .k { color: #8a6d3b; }
+  .row .v { font-weight: 600; }
+  .rank-box {
+    margin: 16px 0; padding: 14px; text-align: center; background: #faf3e3;
+    border: 1px solid #c9a86a; border-radius: 8px;
+  }
+  .rank-box .t { font-size: 12px; color: #a08454; letter-spacing: 2px; }
+  .rank-box .r { font-size: 24px; font-weight: 800; margin: 4px 0; }
+  .rank-box .p { font-size: 18px; font-weight: 700; color: #b03a2e; }
+  .absolve { margin-top: 14px; font-size: 12px; }
+  .absolve-title { font-weight: 700; margin-bottom: 4px; }
+  .absolve ul { padding-left: 18px; }
+  .absolve .exp { color: #a08454; }
+  .absolve-note { margin-top: 4px; color: #8a6d3b; }
+  .absolve.empty { color: #8a6d3b; font-style: italic; }
+  .worst { margin-top: 10px; font-size: 12px; color: #6b4f2a; }
+  .foot { margin-top: 18px; text-align: center; font-size: 11px; color: #a08454; }
+</style>
+</head>
+<body>
+<div class="cert">
+  <div class="seal">麦门<br>告解</div>
+  <div class="head">
+    <div class="org">麦 门 告 解 室</div>
+    <h1>年度告解证书</h1>
+    <div class="no">案号 MCD-CONF-202610221823 · 判决于 2026-10-22 18:23</div>
+  </div>
+  <div class="row"><span class="k">作案次数</span><span class="v">7 单</span></div>
+  <div class="row"><span class="k">累计摄入热量</span><span class="v">6731 千卡</span></div>
+  <div class="row"><span class="k">累计挥霍</span><span class="v">304.90 元</span></div>
+  <div class="row"><span class="k">累计罪恶点</span><span class="v">1289.22</span></div>
+  <div class="row"><span class="k">忠实共犯</span><span class="v">巨无霸</span></div>
+  <div class="rank-box">
+    <div class="t">罪 级 判 定</div>
+    <div class="r">逐出麦籍（死罪）</div>
+    <div class="p">须步行赎罪 约 14.0 天</div>
+  </div>
+  <div class='worst'>罪孽最重的一单：<b>2026-03-20 19:05:31</b> 于 北京朝阳大悦城餐厅 消费 108.00 元</div>
+  <div class='absolve empty'>卡包内暂无赦免凭证，全额赎罪，概不通融。</div>
+  <div class="foot">本证书由麦当劳 MCP 真实数据驱动 · 截图分享即传教<br>仅供娱乐，不构成营养或医疗建议</div>
+</div>
+</body>
+</html>

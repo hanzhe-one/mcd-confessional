@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 本地环境（切勿提交真实 Token）
+.env
+mcp-config.json
+
+# 系统
+.DS_Store
+Thumbs.db
