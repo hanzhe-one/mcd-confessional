@@ -10,7 +10,10 @@
 3. **下次怎么办？** —— 四角色开庭定罪，下达**可执行**的赎罪计划（每日 60 分钟，多少天走完），并盯着你打卡
 
 > 🌐 **在线预览**：https://hanzhe-one.github.io/mcd-confessional/
-> 🧪 **自测**：`python -m src.selftest` → 15 项通过（含 200 例与暴力枚举对拍）
+
+![selftest](https://github.com/hanzhe-one/mcd-confessional/actions/workflows/ci.yml/badge.svg)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![deps](https://img.shields.io/badge/dependencies-0-brightgreen)
 
 ---
 
@@ -49,18 +52,25 @@
 
 ---
 
-## 这套东西凭什么不是"AI 味的壳"
+## 架构：三层分工
 
-| 层 | 实现 | 可验证性 |
+```
+MCP（取数） → Python（算术） → Agent prompt（表达）
+```
+
+组合优化、核价、亏损归因、量刑全部由 `src/` 里的代码算，prompt 只负责把这些数字说成人话。
+这样改文案不会改错数字，改算法也不用动文案。
+
+## 数据边界（哪些是真的，哪些是快照）
+
+| 数据 | 来源 | 性质 |
 | --- | --- | --- |
-| 组合优化 | `src/optimizer.py` 位掩码 DP | 15 项自测，含 **200 例随机场景与暴力枚举对拍**，0 例不一致 |
-| 消费审计 | `src/audit.py` 逐单核价 + 三类归因 | 金额全部可复算，同一输入必得同一输出 |
-| 量刑 | `src/trial.py` 透明公式 | 公式写在 SKILL.md 里，任何人可复核 |
-| 记忆 | `src/state.py` JSON 账本 | 案件、打卡、赎罪进度持久化，可查可验 |
-| 叙事 | Agent prompt（四角色） | 只影响"怎么说"，不影响"算多少" |
+| 订单、营养、卡包券 | `order-list` / `list-nutrition-foods` / `query-my-coupons` | 真实调用 MCP |
+| 菜单价 | `src/demo_data.py` 内置快照 | **演示用**，接 `calculate-price` 后替换 |
+| 审计金额 | 本地组合优化按当前券池重算 | **反事实估算**，不等于「你当时真的多花了」 |
+| 自测结果 | `.github/workflows/ci.yml` | 每次 push 自动跑，见仓库 Actions 页 |
 
-**核心设计原则：取数交给 MCP，算术交给代码，表达交给 Agent。**
-模型不参与任何金额计算——这是"AI 味"和"真工具"的分界线。
+菜单价与审计口径是本项目最薄弱的两环，写在这里而不是藏在角落。
 
 ## 四个角色
 
@@ -165,7 +175,3 @@ mcd-confessional/
 本项目为麦当劳程序员创意开发大赛参赛作品，由参赛者独立开发，**非麦当劳官方产品**。
 项目输出仅供娱乐与自我复盘，不构成医疗、营养或其他专业建议；餐品信息、价格及供应状态
 以麦当劳官方渠道的实时结果为准。“麦门”为玩家社区爱称，本项目不贬损任何品牌形象。
-
----
-
-*取数交给 MCP，算术交给代码，表达交给 Agent。*

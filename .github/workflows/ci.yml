@@ -1,0 +1,28 @@
+name: selftest
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 组合优化自测（含 200 例暴力对拍）
+        run: python -m src.selftest
+
+      - name: 离线庭审冒烟测试
+        run: python -m src.cli trial
+
+      - name: 打卡与账本冒烟测试
+        run: |
+          python -m src.cli trial --save
+          python -m src.cli checkin -m 30
+          python -m src.cli ledger
