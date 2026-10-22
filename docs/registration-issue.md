@@ -1,44 +1,68 @@
-# 报名 Issue 文案（草稿）
+# 报名 Issue 文案（已按官方实际校验规则修正）
 
-> 提交位置：活动仓库 https://github.com/M-China/mcd-developer-innovation-challenge 的 Issues
-> ⚠️ 官方提醒：报名 Issue 的【标题】和【正文】之间暂不要使用换行符；
-> 【项目简介】和【项目简介内容】之间也不要换行；项目地址链接不要用 Markdown 格式。
+> 提交位置：https://github.com/M-China/mcd-developer-innovation-challenge/issues/new
+> 本文件基于对活动仓库报名 Issue 的实测比对得出（含成功与失败样本）。
 
----
+## 一、踩过的坑（实测证据）
 
-## 复制以下内容发布 Issue
+活动仓库里下列 Issue 全部被官方回复“**您的报名信息未通过校验**”，原因都是正文格式：
 
-**标题：**
+| Issue | 正文实际长什么样 | 结果 |
+| --- | --- | --- |
+| #1045 轻盘 | `【参赛申请】项目名称：轻盘 项目地址：https://... 项目简介：...`（全挤一行） | ❌ 失败 |
+| #1004 卡路里钱包 | `【参赛申请】项目名称：卡路里钱包（Calorie Wallet）项目地址：https://...`（名称与地址挤同一行） | ❌ 失败 |
+| #957 mcdcli | `【参赛申请】项目名称：mcdcli项目地址：https://github.com/bian5000/mcdcli` | ❌ 失败 |
+| #802 mcdungeon | `【参赛申请】项目名称：mcdungeon项目地址：...项目简介：...`（全挤一行） | ❌ 失败 |
+| #1034 参赛声明 | 只发了参赛声明正文，没有报名字段 | ❌ 失败 |
+| **#1047 mcd-assistant** | **每个字段各占一行** | ✅ 成功（官方回复“您的作品已成功参赛”） |
+
+## 二、正确格式（照抄即可）
+
+**标题**（单独一行）：
 
 ```
-【参赛申请】麦门告解室：基于麦当劳 MCP 的年度罪状报告生成器
+【参赛申请】麦门告解室 · 基于麦当劳 MCP 的年度罪状报告生成器
 ```
 
-**正文：**
+**正文**（注意：四个部分必须各占一行，`字段名：` 和内容必须在同一行，中间不能断开）：
 
 ```
 【参赛申请】
 项目名称：麦门告解室 · McDonald's Confessional
-项目地址：https://github.com/你的GitHub用户名/mcd-confessional
-项目简介：拉取麦当劳历史订单，按热量与量刑规则逐单判罪：深夜下单罪加一等、单人过百暴食罪、同款三件起算贪、选无糖将功补过，累计罪恶点判定罪级（白衣罪徒到逐出麦籍），并换算步行赎罪工时；卡包内真实优惠券作为"官方赦免"抵扣赎罪工时，赦免券过期即赦免失效。一键生成《年度罪状报告》与可截图分享的《告解证书》。零第三方依赖，标准库实现麦当劳 MCP streamablehttp 客户端，同时以 WorkBuddy Skill 形态发布。
+项目地址：https://github.com/hanzhe-one/mcd-confessional.git
+项目简介：拉取麦当劳历史订单，按热量与量刑规则逐单判罪：深夜下单罪加一等、单人过百暴食罪、同款三件起算贪、选无糖将功补过，累计罪恶点判定罪级（白衣罪徒到逐出麦籍），换算步行赎罪工时；卡包内真实优惠券作为官方赦免抵扣赎罪工时，过期即赦免失效。一键生成《年度罪状报告》与可截图分享的《告解证书》。零第三方依赖，标准库实现麦当劳 MCP streamablehttp 客户端，同时以 WorkBuddy Skill 形态发布，在线预览见 https://hanzhe-one.github.io/mcd-confessional/
 ```
 
----
+## 三、格式要点速查
 
-## 提交前检查清单
+- ✅ 每个字段独立成行：`【参赛申请】` / `项目名称：` / `项目地址：` / `项目简介：` 各一行
+- ✅ 字段名和字段内容在同一行（不要写成“项目名称：”换行再接名字）
+- ✅ 项目地址用纯文本 URL，**不要**用 Markdown 链接语法 `[文字](url)`
+- ✅ GitHub 仓库必须是 **Public**
+- ⚠️ 不要像上面的失败案例那样，用空格把多个字段挤进同一行
 
-- [ ] 仓库已 push 到 GitHub 且为 **Public**
-- [ ] 仓库创建时间在 2025-12-25 ~ 2026-10-25 之间（今天新建即满足）
-- [ ] `CONTEST_DECLARATION.md` 与官方原文完全一致（未改动）
-- [ ] `README.md` / `MCP_INTEGRATION.md` / `mcp-config.example.json` / `workbuddy.md` 均在
-- [ ] `mcp-config.example.json` 中只有环境变量占位符，无真实 Token
-- [ ] 已在 2026-10-25 23:59（北京时间）前提交报名 Issue
-- [ ] 报名后查看 Issue 回复确认"报名成功"
+## 四、提交前检查清单
 
-## Push 命令参考（在仓库目录执行）
+- [x] 仓库已 push 且为 Public：https://github.com/hanzhe-one/mcd-confessional
+- [x] 仓库创建时间在 2025-12-25 ~ 2026-10-25 之间（2026-10-22 创建）
+- [x] `CONTEST_DECLARATION.md` 与官方原文**字节级一致**（1522 bytes，已 diff 验证）
+- [x] `README.md`（含项目介绍 / 安装方法 / 使用示例 / **目标用户**）
+- [x] `MCP_INTEGRATION.md`（Server、Tool 清单、调用流程、业务价值）
+- [x] `mcp-config.example.json`（仅环境变量占位符 `${MCD_MCP_TOKEN}`）
+- [x] `workbuddy.md`（WorkBuddy 专项奖励）
+- [x] 源代码（`src/`，真实调用 MCP）
+- [ ] 报名 Issue 已按上述格式提交（截止 2026-10-25 23:59 北京时间）
+- [ ] 收到“您的作品已成功参赛”回复
 
-```bash
-cd /c/Users/Administrator/Desktop/Fork/mcd-confessional
-git remote add origin https://github.com/你的GitHub用户名/mcd-confessional.git
-git push -u origin main
-```
+## 五、当前竞争态势（2026-10-22 17:01 榜单）
+
+| 门槛 | Star 数 |
+| --- | --- |
+| 第 1 名 | 908 |
+| 第 3 名 | 811 |
+| 第 10 名 | 491 |
+| **第 100 名（拿周边门槛）** | **34** |
+
+同类宗教叙事项目已有：`maimen-certification`（801 ⭐，“上传图→麦门认证梗图卡”）、
+`McOracle`（554 ⭐，答案之书）、`mcd-tarot`（56 ⭐）。差异点：本项目主打
+**历史订单数据挖掘 + 可复现的确定性量刑引擎 + 真实优惠券赦免机制**，且提供在线可看的证书预览。
