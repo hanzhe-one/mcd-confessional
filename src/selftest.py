@@ -70,11 +70,40 @@ def test_coupon_beats_single() -> None:
 
 
 def test_quantity() -> None:
-    print("\n[5] 数量处理")
+    """一份券只能抵一份：买两份不该把同一张券算两次。
+
+    麦当劳卡包的券几乎都是一次性的（券面 totalCount=1）。把它当成
+    「买几份都这个价」会让亏损金额虚高——这类错误只在多份订单里出现，
+    单份订单看起来完全正常，所以必须单独测。
+    """
+    print("\n[5] 数量处理：一次性券不能重复使用")
     c = Coupon("c1", "巨无霸 19.9", "discount", price=19.9, target="巨无霸")
-    plan = optimize([BIG_MAC], [2], [c])
-    check("两份都用券", plan.total, 39.8)
-    check("原价", plan.list_total, 50.0)
+
+    plan1 = optimize([BIG_MAC], [1], [c])
+    check("一份对一份", plan1.total, 19.9)
+
+    plan2 = optimize([BIG_MAC], [2], [c])
+    check("两份只用一次券", plan2.total, 19.9 + 25.0)
+    check("原价", plan2.list_total, 50.0)
+
+    # uses=2 时才是两次都能抵
+    c2 = Coupon("c2", "双次券", "discount", price=19.9, target="巨无霸", uses=2)
+    check("uses=2 两份都用券", optimize([BIG_MAC], [2], [c2]).total, 39.8)
+
+    # 两份需求、两张同类券：各抵一份
+    c3 = Coupon("c3", "另一张巨无霸券", "discount", price=19.9, target="巨无霸")
+    check("两张单次券各抵一份", optimize([BIG_MAC], [2], [c, c3]).total, 39.8)
+
+
+def test_bogo_coupon() -> None:
+    """买一送一：一次使用覆盖 2 份，与「券能用两次」是两回事。"""
+    print("\n[10] 买一送一：max_qty=2 的一次使用")
+    fries = OrderItem("4810", "中薯条", 12.0, 289)
+    bogo = Coupon("c3", "中薯买一送一", "discount", price=6.0, target="中薯条", max_qty=2)
+    check("两份按一次买一送一", optimize([fries], [2], [bogo]).total, 12.0)
+
+    # 三份：一次买一送一 + 一份原价
+    check("三份 = 买一送一 + 原价", optimize([fries], [3], [bogo]).total, 12.0 + 12.0)
 
 
 def test_random_vs_bruteforce() -> None:
@@ -179,6 +208,7 @@ def main() -> int:
     test_reproducible()
     test_channel_filter()
     test_coupon_name_variants()
+    test_bogo_coupon()
 
     print("\n" + "=" * 56)
     print("结果: {} passed, {} failed".format(PASS, FAIL))

@@ -43,6 +43,16 @@ class Coupon:
     kind:
       - "discount": 指定商品的券后价（price 为券后单价），target 为商品名关键词
       - "threshold": 满 threshold 元减 discount 元，target 为 None 表示全场通用
+
+    uses:
+      这张券能被使用几次。麦当劳卡包里的券几乎都是**一次性**的（券面 totalCount=1），
+      所以默认 1。把它当成「一份需求可以用券覆盖多次」会让亏损金额虚高——
+      买 2 个汉堡、手里 1 张券，正确结果是「1 个用券 + 1 个原价」，
+      而不是「2 个都用券价」。
+    max_qty:
+      单次使用最多覆盖几份。**只对 discount 券有意义**：大多数单品券只抵 1 份，
+      所以默认 1；「中薯买一送一」这类才显式写 2。
+      满减券看的是整单金额是否达门槛，天然要覆盖多件，不受此限制。
     """
 
     cid: str
@@ -53,7 +63,8 @@ class Coupon:
     threshold: float = 0.0
     discount: float = 0.0
     channel: str = "any"      # pickup / delivery / any
-    max_qty: int = 99         # 该券最多覆盖几份
+    max_qty: int = 1          # 单次使用最多覆盖几份（仅 discount 券）
+    uses: int = 1             # 这张券总共能用几次
 
 
 @dataclass
@@ -127,6 +138,17 @@ def same_food(coupon_target: str, product_name: str) -> bool:
     return a in b or b in a
 
 
+def cover_limit(coupon: Coupon, n: int) -> int:
+    """这张券单次最多覆盖几件需求。
+
+    满减券看的是整单金额是否达到门槛，天然要覆盖多件，不受 max_qty 限制；
+    单品券默认只抵 1 件，「买一送一」这类才允许覆盖 2 件。
+    """
+    if coupon.kind == "threshold":
+        return n
+    return max(1, min(coupon.max_qty, n))
+
+
 def _coupon_covers(coupon: Coupon, subset: list[OrderItem]) -> tuple[bool, float]:
     """判断一张券能否覆盖给定子集，返回 (可行, 该子集用券后的金额)。"""
     if not subset:
@@ -181,60 +203,95 @@ def optimize(
     n = len(units)
     full = (1 << n) - 1
 
-    # 预处理：每个券 × 每个子集 的可行性
-    coupon_opts: list[tuple[int, Coupon, float]] = []  # (submask, coupon, amount)
-    for coupon in coupons:
-        for size in range(1, min(coupon.max_qty, n) + 1):
+    # 每张券最多能在这单里被用几次：券本身的使用次数上限，且不可能超过需求件数
+    caps = [max(0, min(c.uses, n)) for c in coupons]
+
+    # 预处理：每张券 × 每个子集 的可行性。
+    # 按 (子集, 券) 去重保留最便宜的一行——同一张券覆盖同一个子集只有一种价钱。
+    best_for: dict[tuple[int, int], float] = {}
+    for ci, coupon in enumerate(coupons):
+        if caps[ci] <= 0:
+            continue
+        for size in range(1, cover_limit(coupon, n) + 1):
             for idxs in combinations(range(n), size):
                 subset = [units[i] for i in idxs]
                 ok, amount = _coupon_covers(coupon, subset)
-                if ok:
-                    mask = 0
-                    for i in idxs:
-                        mask |= 1 << i
-                    coupon_opts.append((mask, coupon, amount))
+                if not ok:
+                    continue
+                mask = 0
+                for i in idxs:
+                    mask |= 1 << i
+                key = (mask, ci)
+                if key not in best_for or amount < best_for[key]:
+                    best_for[key] = amount
 
-    # 满减券允许覆盖任意子集，可能数量爆炸；按 mask 去重保留最便宜的那张
-    best_coupon_for_mask: dict[int, tuple[Coupon, float]] = {}
-    for mask, coupon, amount in coupon_opts:
-        cur = best_coupon_for_mask.get(mask)
-        if cur is None or amount < cur[1]:
-            best_coupon_for_mask[mask] = (coupon, amount)
+    # 按子集归组，DP 时逐个子集扫一遍即可
+    opts_by_mask: dict[int, list[tuple[int, float]]] = {}
+    for (mask, ci), amount in best_for.items():
+        opts_by_mask.setdefault(mask, []).append((ci, amount))
+
+    # 已用券次数编码：base 进制，每一位是某张券用掉的次数。
+    # 这是「券只能用一次」的落地方式——用过的券不能再覆盖别的子集。
+    strides: list[int] = []
+    stride = 1
+    for cap in caps:
+        strides.append(stride)
+        stride *= (cap + 1)
+    total_codes = stride
 
     INF = float("inf")
-    # 正向 DP：从 mask=0（什么都没买）出发，直到 full（需求全部满足）
-    dp2 = [INF] * (1 << n)
-    choice2: list[tuple | None] = [None] * (1 << n)
-    dp2[0] = 0.0
-    for mask in range(0, full + 1):
-        if dp2[mask] == INF:
-            continue
-        base = dp2[mask]
-        for i in range(n):
-            if mask & (1 << i):
-                continue
-            nmask = mask | (1 << i)
-            cost = base + units[i].price
-            if cost < dp2[nmask]:
-                dp2[nmask] = cost
-                choice2[nmask] = ("single", i, None, units[i].price, mask)
-        for sub, (coupon, amount) in best_coupon_for_mask.items():
-            if sub & mask:
-                continue
-            nmask = mask | sub
-            cost = base + amount
-            if cost < dp2[nmask]:
-                dp2[nmask] = cost
-                choice2[nmask] = ("coupon", sub, coupon, amount, mask)
 
-    plan.total = round(dp2[full], 2)
+    def code_of(counts: list[int]) -> int:
+        return sum(c * s for c, s in zip(counts, strides))
+
+    # 正向 DP：状态 = (已满足的需求掩码, 各券已用次数)
+    # dp[mask][code] = 最小花费；choice 记录 (前一状态, 动作)，用于回溯
+    dp: list[dict[int, float]] = [dict() for _ in range(1 << n)]
+    choice: list[dict[int, tuple]] = [dict() for _ in range(1 << n)]
+    dp[0][0] = 0.0
+
+    for mask in range(0, full + 1):
+        if not dp[mask]:
+            continue
+        # 快照：本轮写入的目标状态属于更大的 mask，不会回写到当前 mask
+        for code, base_cost in list(dp[mask].items()):
+            counts = [(code // s) % (cap + 1) for s, cap in zip(strides, caps)]
+
+            for i in range(n):
+                if mask & (1 << i):
+                    continue
+                nmask = mask | (1 << i)
+                cost = base_cost + units[i].price
+                cur = dp[nmask].get(code)
+                if cur is None or cost < cur:
+                    dp[nmask][code] = cost
+                    choice[nmask][code] = ("single", i, None, units[i].price, mask, code)
+
+            for sub, entries in opts_by_mask.items():
+                if sub & mask:
+                    continue
+                nmask = mask | sub
+                for ci, amount in entries:
+                    if counts[ci] >= caps[ci]:
+                        continue
+                    ncode = code + strides[ci]
+                    cost = base_cost + amount
+                    cur = dp[nmask].get(ncode)
+                    if cur is None or cost < cur:
+                        dp[nmask][ncode] = cost
+                        choice[nmask][ncode] = ("coupon", sub, coupons[ci], amount, mask, code)
+
+    final_code = min(dp[full], key=lambda c: dp[full][c])
+    plan.total = round(dp[full][final_code], 2)
+
+    # 回溯：从 (full, final_code) 倒推每一步
     lines_rev: list[PlanLine] = []
-    mask = full
+    mask, code = full, final_code
     while mask:
-        step = choice2[mask]
+        step = choice[mask].get(code)
         if step is None:
             break
-        kind, payload, coupon, amount, prev = step
+        kind, payload, coupon, amount, pmask, pcode = step
         if kind == "single":
             u = units[payload]
             lines_rev.append(PlanLine(desc="{} x1".format(u.name), kind="single", amount=u.price, codes=(u.code,)))
@@ -253,7 +310,7 @@ def optimize(
             )
             if coupon.name not in plan.coupon_names:
                 plan.coupon_names.append(coupon.name)
-        mask = prev
+        mask, code = pmask, pcode
 
     plan.lines = list(reversed(lines_rev))
     return plan
@@ -265,37 +322,47 @@ def brute_force_best(
     coupons: list[Coupon] | None = None,
     channel: str = "pickup",
 ) -> float:
-    """暴力枚举所有划分方式，仅用于自测对拍（n <= 8）。"""
+    """暴力枚举所有划分方式，仅用于自测对拍（n <= 8）。
+
+    与 optimize() 使用同一套规则：券可用次数受 Coupon.uses 限制。
+    这里用显式递归枚举「剩下的需求怎么分配」，不做记忆化——状态里带着
+    各券已用次数，记忆化收益不抵复杂度，规模本来就只有 n <= 8。
+    """
     coupons = [c for c in (coupons or []) if c.channel in ("any", channel)]
     units = _expand_units(items, qty)
     n = len(units)
     if n == 0:
         return 0.0
-    full = (1 << n) - 1
 
-    from functools import lru_cache
+    caps = [max(0, min(c.uses, n)) for c in coupons]
+    INF = float("inf")
 
-    @lru_cache(maxsize=None)
-    def best(mask: int) -> float:
-        if mask == full:
+    def best(mask: int, used: tuple[int, ...]) -> float:
+        if mask == (1 << n) - 1:
             return 0.0
+
+        res = INF
         # 单买第一件未覆盖的
         for i in range(n):
             if not (mask & (1 << i)):
-                res = units[i].price + best(mask | (1 << i))
+                res = units[i].price + best(mask | (1 << i), used)
                 break
-        # 所有包含这件商品的券子集
-        for coupon in coupons:
-            for size in range(1, min(coupon.max_qty, n) + 1):
+
+        # 用一张还有剩余次数的券覆盖一个包含未满足需求的子集
+        for ci, coupon in enumerate(coupons):
+            if used[ci] >= caps[ci]:
+                continue
+            for size in range(1, cover_limit(coupon, n) + 1):
                 for idxs in combinations(range(n), size):
-                    if not any(not (mask & (1 << i)) for i in idxs):
-                        continue
-                    if mask & sum(1 << i for i in idxs):
+                    sub = sum(1 << i for i in idxs)
+                    if mask & sub:
                         continue
                     ok, amount = _coupon_covers(coupon, [units[i] for i in idxs])
-                    if ok:
-                        m2 = mask | sum(1 << i for i in idxs)
-                        res = min(res, amount + best(m2))
+                    if not ok:
+                        continue
+                    nused = list(used)
+                    nused[ci] += 1
+                    res = min(res, amount + best(mask | sub, tuple(nused)))
         return res
 
-    return round(best(0), 2)
+    return round(best(0, tuple([0] * len(coupons))), 2)

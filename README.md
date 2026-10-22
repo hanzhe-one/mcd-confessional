@@ -11,7 +11,7 @@
   <a href="https://github.com/hanzhe-one/mcd-confessional/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/hanzhe-one/mcd-confessional/actions/workflows/ci.yml/badge.svg"></a>
   <img alt="Python" src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white">
   <img alt="依赖" src="https://img.shields.io/badge/dependencies-0-brightgreen">
-  <img alt="自测" src="https://img.shields.io/badge/selftest-18%20passed-success">
+  <img alt="自测" src="https://img.shields.io/badge/selftest-23%20passed-success">
   <img alt="MCP" src="https://img.shields.io/badge/麦当劳-MCP%20真实联调-DA291C">
 </p>
 
@@ -198,7 +198,7 @@ python -m src.cli trial --save   # 庭审 + 判决写入账本
 python -m src.cli audit          # 只看审计：逐单亏损与归因
 python -m src.cli checkin -m 60  # 打卡赎罪 60 分钟
 python -m src.cli ledger         # 查账本与赎罪进度
-python -m src.selftest           # 跑自测（18 项，含 200 例暴力对拍）
+python -m src.selftest           # 跑自测（23 项，含 200 例暴力对拍）
 ```
 
 跑完会在 `examples/` 下生成 `confession-certificate.html` 和 `trial-record.html`。
@@ -292,7 +292,7 @@ mcd-confessional/
 │   ├── report.py               # 罪状报告 + 告解证书
 │   ├── render_trial.py         # 庭审记录可视化
 │   ├── console.py              # 控制台编码兜底（Windows GBK）
-│   ├── selftest.py             # 18 项自测
+│   ├── selftest.py             # 23 项自测
 │   ├── cli.py                  # 命令行入口
 │   └── demo_data.py            # 虚构演示档案
 ├── data/nutrition_baseline.txt # 158 项餐品营养离线基线
@@ -305,6 +305,7 @@ mcd-confessional/
 ## 真机联调踩到的坑
 
 只有拿真实 Token 跑过才会暴露的问题，记下来给后来者省时间：
+
 
 **1. `notifications/initialized` 不能按 JSON 解析。**
 JSON-RPC 通知没有 `id`，服务端按规范返回空响应体（202/204）。客户端必须先判断空 body
@@ -325,7 +326,14 @@ JSON-RPC 通知没有 `id`，服务端按规范返回空响应体（202/204）�
 `UnicodeEncodeError: 'gbk' codec can't encode character '✓'`，庭审打到一半退出。
 修复见 `src/console.py`。
 
-> 这四条也是本项目「不接受自我宣称」的原因：没真跑之前，README 里写「真实调用 MCP ✅」是没有意义的。
+**5. 券是一次性的，别把「券价」当成「这个商品的单价」。**
+`query-my-coupons` 返回的 `totalCount` 几乎都是 1。如果优化器允许一张券覆盖多份，
+买 2 个汉堡就会被算成「2 × 券价」，亏损金额虚高。这个 bug 只在一单多份时出现，
+单份订单看起来完全正常，所以很容易漏掉。修复见 `Coupon.uses` 与
+`src/selftest.py::test_quantity`。
+
+> 这五条也是本项目「不接受自我宣称」的原因：没真跑之前，README 里写「真实调用 MCP ✅」是没有意义的。
+> 前四条让程序跑不起来或读不到数据，第五条更麻烦——它不报错，只是安静地把所有金额算错。
 
 ---
 
