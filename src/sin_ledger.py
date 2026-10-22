@@ -19,7 +19,9 @@ from .nutrition_table import Food, NutritionTable
 # 常量：罪律
 # --------------------------------------------------------------------- #
 SIN_PER_KCAL = 0.1           # 每千卡 = 0.1 罪恶点
-WALK_MIN_PER_KCAL = 3        # 每千卡 = 步行赎罪 3 分钟
+# 赎罪换算依据：慢走（约 4 km/h）每分钟消耗约 4 千卡 → 1 千卡 ≈ 0.25 分钟步行。
+# 这是可以查证的口径，不做夸张处理，报告里会注明。
+WALK_MIN_PER_KCAL = 0.25
 
 LATE_NIGHT_START = 22        # 22:00 之后
 LATE_NIGHT_END = 5           # 05:00 之前

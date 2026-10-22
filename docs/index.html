@@ -3,57 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>麦门告解室 · 年度罪状报告</title>
+<title>麦门告解室 · 四角色消费审判庭</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
-    background: #f5efe3; color: #3d2b1f; line-height: 1.7;
-  }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 48px 24px 80px; }
-  header { text-align: center; margin-bottom: 40px; }
-  header .tag {
-    display: inline-block; font-size: 12px; letter-spacing: 3px; color: #a08454;
-    border: 1px solid #d8c49a; border-radius: 99px; padding: 4px 14px; margin-bottom: 16px;
-  }
+  body { font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+         background: #f5efe3; color: #3d2b1f; line-height: 1.7; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 48px 24px 80px; }
+  header { text-align: center; margin-bottom: 36px; }
+  header .tag { display: inline-block; font-size: 12px; letter-spacing: 3px; color: #a08454;
+                border: 1px solid #d8c49a; border-radius: 99px; padding: 4px 14px; margin-bottom: 16px; }
   h1 { font-size: 38px; letter-spacing: 4px; margin-bottom: 10px; }
   .sub { color: #8a6d3b; font-size: 15px; }
-  .hero {
-    display: flex; gap: 28px; align-items: center; flex-wrap: wrap;
-    justify-content: center; margin: 36px 0;
-  }
-  .cert-frame {
-    width: 340px; border-radius: 12px; overflow: hidden;
-    box-shadow: 0 12px 40px rgba(61,43,31,.22); border: 1px solid #e0d0b0;
-    background: #fffdf6;
-  }
-  .cert-frame iframe { width: 100%; height: 620px; border: 0; display: block; }
-  .hero-text { max-width: 420px; }
-  .hero-text h2 { font-size: 20px; margin-bottom: 10px; }
+  .hero { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; justify-content: center; margin: 36px 0; }
+  .cert-frame { width: 340px; border-radius: 12px; overflow: hidden;
+                box-shadow: 0 12px 40px rgba(61,43,31,.22); border: 1px solid #e0d0b0; background: #fffdf6; }
+  .cert-frame iframe { width: 100%; height: 660px; border: 0; display: block; }
+  .hero-text { max-width: 430px; }
+  .hero-text h2 { font-size: 21px; margin-bottom: 10px; }
   .hero-text p { font-size: 14px; color: #6b4f2a; margin-bottom: 12px; }
-  .btn {
-    display: inline-block; background: #b03a2e; color: #fff; text-decoration: none;
-    padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600;
-  }
+  .btn { display: inline-block; background: #b03a2e; color: #fff; text-decoration: none;
+         padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; }
   .btn.ghost { background: transparent; color: #b03a2e; border: 1px solid #b03a2e; margin-left: 8px; }
-  section { margin-top: 48px; }
-  h3 {
-    font-size: 18px; margin-bottom: 16px; padding-left: 12px;
-    border-left: 4px solid #c9a86a;
-  }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-  .card {
-    background: #fffdf6; border: 1px solid #e8dcc0; border-radius: 10px; padding: 18px;
-  }
-  .card .t { font-weight: 700; margin-bottom: 6px; }
+  section { margin-top: 44px; }
+  h3 { font-size: 18px; margin-bottom: 16px; padding-left: 12px; border-left: 4px solid #c9a86a; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .card { background: #fffdf6; border: 1px solid #e8dcc0; border-radius: 10px; padding: 16px; }
+  .card .role { font-size: 12px; color: #a08454; letter-spacing: 2px; }
+  .card .t { font-weight: 700; margin: 4px 0 6px; font-size: 15px; }
   .card .d { font-size: 13px; color: #6b4f2a; }
-  pre {
-    background: #2f2418; color: #f0e6d2; padding: 16px 18px; border-radius: 10px;
-    overflow-x: auto; font-size: 13px; line-height: 1.9;
-    font-family: Consolas, Monaco, monospace;
-  }
-  .note { font-size: 12px; color: #a08454; text-align: center; margin-top: 56px; line-height: 1.9; }
-  .rank { font-size: 12px; color: #8a6d3b; }
+  pre { background: #2f2418; color: #f0e6d2; padding: 18px; border-radius: 10px; overflow-x: auto;
+        font-size: 12.5px; line-height: 1.85; font-family: Consolas, Monaco, monospace; }
+  pre .hl { color: #ffb4a2; font-weight: 700; }
+  .kv { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 12px; font-size: 13px; color: #6b4f2a; }
+  .kv b { color: #b03a2e; }
+  .note { font-size: 12px; color: #a08454; text-align: center; margin-top: 52px; line-height: 1.9; }
 </style>
 </head>
 <body>
@@ -61,7 +44,7 @@
   <header>
     <div class="tag">麦当劳程序员创意开发大赛 · 参赛作品</div>
     <h1>麦门告解室</h1>
-    <div class="sub">“孩子，坐。让本席看看你这一年都在麦当劳犯了些什么事。”</div>
+    <div class="sub">四角色消费审判庭 · 取数交给 MCP，算术交给代码，表达交给 Agent</div>
   </header>
 
   <div class="hero">
@@ -69,37 +52,60 @@
       <iframe src="confession-certificate.html" title="告解证书示例"></iframe>
     </div>
     <div class="hero-text">
-      <h2>不是卡路里计算器，是审判。</h2>
-      <p>拉取你的麦当劳历史订单，按热量与量刑规则逐单判罪：深夜下单罪加一等、单人过百暴食罪、同款三件起算贪、选无糖将功补过。</p>
-      <p>累计罪恶点判定罪级，换算步行赎罪工时；<b>卡包里真实的优惠券</b>可作为官方赦免抵扣工时——券过期，赦免失效。</p>
+      <h2>不是卡路里计算器，是审计。</h2>
+      <p>把每一笔历史订单丢进<b>券组合优化器</b>重算一遍，算出你「本该花多少」，
+         差额归因到「没用券 / 券没用到位 / 规格不划算」。</p>
+      <p>然后四个角色开庭：审计官摆数字、辩护律师找减刑、告解师定罪、
+         执事下达<b>每日 60 分钟</b>的赎罪计划并盯着你打卡。</p>
       <a class="btn" href="https://github.com/hanzhe-one/mcd-confessional">查看源码</a>
       <a class="btn ghost" href="confession-certificate.html">单独打开证书</a>
     </div>
   </div>
 
   <section>
-    <h3>玩法机制</h3>
+    <h3>四个角色，分工是咬合的</h3>
     <div class="grid">
-      <div class="card"><div class="t">⚖️ 罪律引擎</div><div class="d">罪恶点 = 千卡 × 0.1；深夜 ×2、周五 ×1.2、暴食 ×1.5、贪 ×1.3、无糖 ×0.9</div></div>
-      <div class="card"><div class="t">🏛️ 四阶罪级</div><div class="d">白衣罪徒 → 黑袍常客 → 麦门叛徒 → 逐出麦籍（死罪）</div></div>
-      <div class="card"><div class="t">🚶 赎罪工时</div><div class="d">千卡 × 3 分钟步行，精确到“你还欠麦当劳多少路”</div></div>
-      <div class="card"><div class="t">🎫 真实赦免</div><div class="d">MCP 读取卡包真实优惠券，每张抵 5% 工时（上限 40%），过期即失效</div></div>
+      <div class="card"><div class="role">THE AUDITOR</div><div class="t">审计官</div><div class="d">「感情归你，数字归我。」逐单核价，把亏损摆上台面。</div></div>
+      <div class="card"><div class="role">THE ADVOCATE</div><div class="t">辩护律师</div><div class="d">「没有人天生就是罪人。」从真实数据找减刑情节，每条减刑 5%，会被驳回。</div></div>
+      <div class="card"><div class="role">THE CONFESSOR</div><div class="t">告解师</div><div class="d">「本席不同情你，但本席理解你。」盘问异常订单、定罪、写批注。</div></div>
+      <div class="card"><div class="role">THE BAILIFF</div><div class="t">执事</div><div class="d">「判决书签了字，就得走完这段路。」入账、下达计划、盯打卡、券预警。</div></div>
     </div>
   </section>
 
   <section>
-    <h3>零安装体验</h3>
+    <h3>真实庭审输出（摘要）</h3>
+    <pre>【审计官陈词】
+经逐单复核：按当前券池的最优组合，7 单里有 3 单本可以更便宜。
+实付合计 333.00 元，理论最优合计 311.50 元，差额 <span class="hl">36.00 元</span>（占实付 10.8%）。
+亏损最重的一单：实付 122.00 元，最优价 100.00 元，<span class="hl">白扔 22.00 元</span>。
+
+【合议量刑】
+基准刑：热量赎罪 约 1.2 天 + 亏损罚金赎罪 约 6.0 小时
+采纳辩护 4 条，减刑 20%　驳回 2 条，理由：证据不足或属普遍行为
+最终赎罪义务：<span class="hl">约 1.1 天</span>
+
+【执事登记】
+赎罪计划：每日步行 60 分钟，预计 27 天完成。</pre>
+    <div class="kv">
+      <span>组合优化：<b>位掩码 DP</b></span>
+      <span>自测：<b>15 项通过</b>（含 200 例暴力对拍）</span>
+      <span>模型不参与任何金额计算</span>
+    </div>
+  </section>
+
+  <section>
+    <h3>零配置体验</h3>
     <pre>git clone https://github.com/hanzhe-one/mcd-confessional.git
 cd mcd-confessional
-python -m src.cli demo          # 内置虚构档案，无需 Token
-python -m src.cli confess       # 接入 MCP，对真实订单宣判</pre>
-    <p class="rank">输出：examples/sin-report.md（完整罪状报告）+ examples/confession-certificate.html（本文所示的证书）</p>
+python -m src.cli trial --save    # 开庭（虚构档案，无需 Token）
+python -m src.cli checkin -m 60   # 打卡赎罪 60 分钟
+python -m src.selftest            # 跑自测</pre>
   </section>
 
   <div class="note">
     本项目为比赛参赛作品，由开发者独立开发，非麦当劳官方产品。<br>
-    输出仅供娱乐，不构成营养或医疗建议；餐品信息以麦当劳官方渠道为准。<br>
-    <span class="rank">以代码之名，行审判之实。🍟</span>
+    审计金额为「按当前券池重算」的反事实估算，菜单价为演示快照；输出仅供娱乐，不构成营养或医疗建议。<br>
+    <span style="color:#8a6d3b">取数交给 MCP · 算术交给代码 · 表达交给 Agent</span>
   </div>
 </div>
 </body>

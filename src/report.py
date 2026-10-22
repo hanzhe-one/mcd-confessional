@@ -133,10 +133,31 @@ def _priest_note(verdict: Verdict) -> str:
     return notes.get(verdict.rank, notes["白衣罪徒"])
 
 
-def render_certificate_html(verdict: Verdict, now: datetime) -> str:
-    """生成单文件 HTML 告解证书，适合截图分享。"""
+def render_certificate_html(verdict: Verdict, now: datetime, audit_summary=None) -> str:
+    """生成单文件 HTML 告解证书，适合截图分享。
+
+    audit_summary 可选：传入审计结果后，证书会多出一行"白扔金额"——
+    这是整个项目里最能让人截图传播的数字。
+    """
     case_no = "{}-{}".format(CASE_NO_PREFIX, now.strftime("%Y%m%d%H%M"))
     top_food = verdict.top_food[0] if verdict.top_food else "—"
+
+    audit_row = ""
+    audit_block = ""
+    if audit_summary is not None and getattr(audit_summary, "cases", None):
+        bad = sum(1 for c in audit_summary.cases if c.gap > 0.5)
+        audit_row = "<div class='row'><span class='k'>审计结论</span><span class='v'>{}/{} 单本可更便宜</span></div>".format(
+            bad, len(audit_summary.cases))
+        audit_block = (
+            "<div class='gapbox'><div class='gap-t'>按当前券池复核，你白扔了</div>"
+            "<div class='gap-v'>{:.2f} 元</div>"
+            "<div class='gap-s'>占实付 {:.1f}%　最惨一单白扔 {:.2f} 元</div></div>"
+        ).format(
+            audit_summary.total_gap,
+            audit_summary.gap_rate,
+            max((c.gap for c in audit_summary.cases), default=0.0),
+        )
+
     coupons_html = ""
     if verdict.coupons:
         lis = "".join(
@@ -208,6 +229,13 @@ def render_certificate_html(verdict: Verdict, now: datetime) -> str:
   .absolve-note {{ margin-top: 4px; color: #8a6d3b; }}
   .absolve.empty {{ color: #8a6d3b; font-style: italic; }}
   .worst {{ margin-top: 10px; font-size: 12px; color: #6b4f2a; }}
+  .gapbox {{
+    margin-top: 12px; padding: 10px 12px; border: 1px dashed #b03a2e;
+    border-radius: 8px; text-align: center; background: #fdf5f4;
+  }}
+  .gapbox .gap-t {{ font-size: 11px; color: #8a6d3b; }}
+  .gapbox .gap-v {{ font-size: 22px; font-weight: 800; color: #b03a2e; line-height: 1.3; }}
+  .gapbox .gap-s {{ font-size: 11px; color: #8a6d3b; }}
   .foot {{ margin-top: 18px; text-align: center; font-size: 11px; color: #a08454; }}
 </style>
 </head>
@@ -224,11 +252,13 @@ def render_certificate_html(verdict: Verdict, now: datetime) -> str:
   <div class="row"><span class="k">累计挥霍</span><span class="v">{amount} 元</span></div>
   <div class="row"><span class="k">累计罪恶点</span><span class="v">{sin}</span></div>
   <div class="row"><span class="k">忠实共犯</span><span class="v">{top_food}</span></div>
+  {audit_row}
   <div class="rank-box">
     <div class="t">罪 级 判 定</div>
     <div class="r">{rank}（{rank_desc}）</div>
     <div class="p">须步行赎罪 {walk}</div>
   </div>
+  {audit_block}
   {worst}
   {coupons_html}
   <div class="foot">本证书由麦当劳 MCP 真实数据驱动 · 截图分享即传教<br>仅供娱乐，不构成营养或医疗建议</div>
@@ -245,6 +275,8 @@ def render_certificate_html(verdict: Verdict, now: datetime) -> str:
         rank=verdict.rank,
         rank_desc=verdict.rank_desc,
         walk=format_walk(verdict.walk_minutes),
+        audit_row=audit_row,
+        audit_block=audit_block,
         worst=worst,
         coupons_html=coupons_html,
     )
