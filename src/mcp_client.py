@@ -68,17 +68,39 @@ class MCPClient:
             raise MCPError("MCP HTTP {}: {}".format(exc.code, detail[:300])) from exc
         except urllib.error.URLError as exc:
             raise MCPError("MCP 连接失败: {}".format(exc.reason)) from exc
+
+        # JSON-RPC 通知（notification）没有 id，服务端按规范返回空响应体（202/204），
+        # 此时不应尝试解析 JSON —— 这是真机联调才会暴露的坑。
+        if not body.strip():
+            return {}
         return self._parse_body(body)
 
     @staticmethod
     def _parse_body(body: str) -> dict:
         """streamablehttp 的响应可能是纯 JSON，也可能是 SSE 流，两种都兼容。"""
         text = body.strip()
+        if not text:
+            return {}
         if text.startswith("event:") or text.startswith("data:"):
+            # SSE 可能包含多个 data 帧，取最后一个带 result/error 的
+            last: dict | None = None
             for line in text.splitlines():
-                if line.startswith("data:"):
-                    return json.loads(line[len("data:"):].strip())
-            raise MCPError("SSE 响应中未找到 data 帧")
+                if not line.startswith("data:"):
+                    continue
+                payload = line[len("data:"):].strip()
+                if not payload or payload == "[DONE]":
+                    continue
+                try:
+                    parsed = json.loads(payload)
+                except ValueError:
+                    continue
+                if isinstance(parsed, dict) and ("result" in parsed or "error" in parsed):
+                    last = parsed
+                elif last is None:
+                    last = parsed
+            if last is None:
+                raise MCPError("SSE 响应中未找到有效 data 帧")
+            return last
         return json.loads(text)
 
     def initialize(self) -> None:
@@ -137,11 +159,53 @@ class MCPClient:
         try:
             parsed = json.loads(raw)
         except (ValueError, TypeError):
-            return {"data": raw, "raw_text": raw}
+            # 麦当劳 MCP 的实际返回形如「# API Response Information ... ## Original Response
+            # {"success":true,...}」，即"给模型看的说明 + 原始 JSON"，
+            # 必须从文本里抠出 JSON 对象，否则所有业务字段都取不到。
+            parsed = self._extract_json(raw)
+            if parsed is None:
+                return {"data": raw, "raw_text": raw}
 
         if isinstance(parsed, dict) and "data" in parsed:
             return parsed
         return {"data": parsed, "raw_text": raw}
+
+    @staticmethod
+    def _extract_json(text: str) -> dict | None:
+        """从「说明文字 + JSON」的混合文本里提取第一个完整的 JSON 对象。"""
+        marker = "## Original Response"
+        idx = text.find(marker)
+        candidate = text[idx + len(marker):].strip() if idx >= 0 else text.strip()
+
+        start = candidate.find("{")
+        if start < 0:
+            return None
+
+        depth = 0
+        in_str = False
+        escaped = False
+        for i in range(start, len(candidate)):
+            ch = candidate[i]
+            if in_str:
+                if escaped:
+                    escaped = False
+                elif ch == "\\":
+                    escaped = True
+                elif ch == '"':
+                    in_str = False
+            else:
+                if ch == '"':
+                    in_str = True
+                elif ch == "{":
+                    depth += 1
+                elif ch == "}":
+                    depth -= 1
+                    if depth == 0:
+                        try:
+                            return json.loads(candidate[start:i + 1])
+                        except ValueError:
+                            return None
+        return None
 
     # ------------------------------------------------------------------ #
     # 业务便捷方法（本项目用到的四个工具）

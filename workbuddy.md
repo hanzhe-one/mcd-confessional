@@ -30,5 +30,6 @@
 
 - Skill 安装路径：将本仓库作为 Skill 目录加载（或复制 `SKILL.md` 与 `src/`
   至 WorkBuddy 技能目录），即可在对话框中触发“麦门告解室”。
-- 真实使用麦当劳 MCP + 真实使用腾讯 WorkBuddy 两项条件均已满足，
-  特此提交本文件供核验。
+- 开发过程中通过 WorkBuddy 的自定义连接器（mcd-mcp）调用过 `order-list`、
+  `list-nutrition-foods`、`query-my-coupons`、`now-time-info`，返回结构与字段
+  即依据这些实际调用确定；真机联调踩到的三个坑记录在 `MCP_INTEGRATION.md`。

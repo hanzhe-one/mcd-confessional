@@ -156,20 +156,6 @@ mcd-confessional/
 └── examples/                   # 生成的报告与证书
 ```
 
-## 参赛合规自查
-
-| 规则要求 | 本仓库 |
-| --- | --- |
-| 仓库公开、创建于 2025-12-25 ~ 2026-10-25 | ✅ public，2026-10-22 创建 |
-| README（介绍/安装/示例/**目标用户**） | ✅ 四个部分均有独立章节 |
-| CONTEST_DECLARATION.md | ✅ 与官方原文**字节级一致**（1522 bytes，diff 验证） |
-| MCP_INTEGRATION.md | ✅ Server / Tool 清单 / 调用流程 / 业务价值 |
-| mcp-config.example.json | ✅ 仅 `${MCD_MCP_TOKEN}` 占位 |
-| 源代码 | ✅ 真实调用 MCP，可本地跑通 |
-| workbuddy.md | ✅ WorkBuddy 专项 |
-| 真实使用麦当劳 MCP | ✅ `--live` 模式 + `mcp_client.py` 实际调用 |
-| 未包含真实凭证 | ✅ Token 仅环境变量，账本已 gitignore |
-
 ## 免责声明
 
 本项目为麦当劳程序员创意开发大赛参赛作品，由参赛者独立开发，**非麦当劳官方产品**。

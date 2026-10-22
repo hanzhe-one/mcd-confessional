@@ -75,6 +75,37 @@
 4. **轻量集成范式**：不依赖任何 MCP SDK，仅用 Python 标准库实现 streamablehttp 客户端
    （`src/mcp_client.py`），可作为麦当劳 MCP 轻量集成的参考实现。
 
+## 真机联调踩坑记录（只有真跑才会暴露）
+
+以下三条是作者用真实 Token 跑通 `--live` 时踩到的，记下来给后来者省时间：
+
+1. **`notifications/initialized` 不能按 JSON 解析。**
+   JSON-RPC 通知没有 id，服务端按规范返回空响应体（202/204）。
+   客户端必须先判断空 body 再决定是否 `json.loads`，否则握手阶段直接抛异常。
+
+2. **返回的不是纯 JSON，而是「说明文字 + 原始 JSON」。**
+   麦当劳 MCP 的文本块形如：
+
+   ```
+   # API Response Information
+   ...
+   ## Original Response
+   {"success":true,"code":200,"data":{...}}
+   ```
+
+   直接 `json.loads` 整段必然失败，必须从 `## Original Response` 之后做括号平衡扫描提取 JSON 对象
+   （实现见 `src/mcp_client.py::_extract_json`）。**不处理这一点，所有业务字段都是空的**——
+   而且错误表现很隐蔽：订单数返回 0，而不是报错。
+
+3. **订单商品名与营养表命名对不上。**
+   实测订单里叫「柠檬蛋奶风味双旋圆筒」，营养表里叫「圆筒冰淇淋」，
+   既不是精确匹配也不是互相包含，模糊匹配会静默返回 0 千卡。
+   解决方式是在 `src/nutrition_table.py` 里加同义词映射表（`_ALIASES`），
+   按具体到宽泛的顺序兜底。
+
+> 这三条也是本项目「不接受自我宣称」的原因：在没有真跑之前，
+> README 里写「真实调用 MCP ✅」是没有任何意义的。
+
 ## 审计口径与边界（诚实说明）
 
 - 审计金额 = 实付 − 「用当前券池做组合优化的最优价」，属**反事实估算**
